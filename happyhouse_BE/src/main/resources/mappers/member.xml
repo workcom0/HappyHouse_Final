@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.mapper.MemberMapper">
+
+	<!-- 회원가입 -->
+    <insert id="register" parameterType="memberDto">
+        insert into member
+        values(#{memberId}, #{memberPw}, #{name}, #{email}, #{tel}, 0);
+    </insert>
+    
+    <!-- 사용자 중복체크 -->
+	<select id="duplicateMemberCheck" parameterType="String" resultType="int">
+		select
+			count(*)
+		from
+			member
+		where
+			memberId = #{memberId}		
+	</select>
+    
+    <!-- 계정 권한 설정 1:User 2: Admin -->
+    <insert id="insertUserAuthorities" parameterType="MemberDto">
+        insert into member_role
+        values(#{memberId}, 1);
+    </insert>
+    
+    <!-- 계정 권한 조회 -->
+<!-- 	<select id="getUserAuthorities" parameterType="String" resultType="UserAuthority">
+		select
+			
+     		,(SELECT CODE_EXP FROM TB_CODE TCD WHERE TCD.CODE_NO = '200' AND TCD.CODE_NAME = TA.AUTHORITY) AS AUTHORITY_NM
+		from
+     		member_role
+     	where
+     		TA.USER_ID = #{userId}	
+     </select> -->
+	
+	<!-- 로그인 조회 -->
+	<select id="login" parameterType="MemberDto" resultType="MemberDto">
+		select memberId, email, tel, name, isAdmin
+		from member
+		where memberId = #{memberId}
+	</select>
+	
+	<!-- 아이디로 조회 -->
+	<select id="findById" parameterType="MemberDto" resultType="MemberDto">
+		select memberId, memberPw
+		from member
+		where memberId = #{memberId}
+	</select>
+	
+	<!-- 비밀번호 변경 전 id, email, tel이 일치하는지 확인 -->
+	<select id="checkBeforeChangePw" resultType="String">
+		select memberId 
+		from member 
+		where memberId = #{memberId} and email = #{email} and tel = #{tel}
+	</select>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="changePassword">
+		update member set memberPw=#{changePw}
+		where memberId = #{memberId}
+	</update>
+	
+	<!-- 회원 탈퇴 -->
+	<delete id="removeMember">
+		delete from member where memberId = #{memberId}
+	</delete>
+	
+	<!-- 회원 정보 조회 -->
+	<select id="memberInfo" parameterType="String" resultType="MemberDto">
+		select memberId, email, tel, name, isAdmin
+		from member
+		where memberId = #{memberId}
+	</select>
+	
+	<!-- 회원 정보 변경 -->
+	<update id="changeMemberInfo" parameterType="MemberDto">
+		<if test="memberPw != null">
+			update member set memberPw=#{memberPw},
+			 email=#{email}, tel=#{tel}, name=#{name}
+			where memberId = #{memberId}
+		</if>
+		<if test="memberPw == null">
+			update member set
+			 email=#{email}, tel=#{tel}, name=#{name}
+			where memberId = #{memberId}
+		</if>
+		
+	</update>
+	
+</mapper>

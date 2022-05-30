@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.mapper.HouseMapper">
+
+	<select id="getSido" resultType="sidoGugunDongDto">
+		select left(sidoCode,2) sidoCode, sidoName
+		from sido
+		order by sidoCode
+	</select>
+	
+	<select id="getGugunInSido" parameterType="string" resultType="sidoGugunDongDto">
+		select left(gugunCode,5) gugunCode, gugunName
+		from gugun
+		where left(gugunCode,2) = #{sido}
+		order by gugunCode
+	</select>
+	
+	<select id="getDongInGugun" parameterType="string" resultType="sidoGugunDongDto">
+		select dongCode, dongName
+		from dong
+		where left(dongCode,5) = #{gugun} and dongName is not null
+		order by dongCode
+	</select>
+	
+	<select id="getAptInDong" parameterType="string" resultType="HouseDealDto">
+		select d.no, d.aptCode, i.apartmentName, c.dongCode, c.dongName, c.sidoName, c.gugunName, i.buildYear, i.jibun, i.lat, i.lng, d.dealAmount, d.dealYear, d.dealMonth, d.dealDay, d.area, d.floor
+		from houseinfo i, housedeal d, dong c
+		where i.dongcode=#{dong} and i.aptCode=d.aptCode and i.dongcode=c.dongcode
+		order by d.dealYear desc, d.dealMonth desc, d.dealDay desc
+	</select>	
+
+	<select id="getAptInName" parameterType="string" resultType="HouseDealDto">
+		select d.no, d.aptCode, i.apartmentName, c.dongCode, c.dongName, c.sidoName, c.gugunName, i.buildYear, i.jibun, i.lat, i.lng, d.dealAmount, d.dealYear, d.dealMonth, d.dealDay, d.area, d.floor
+		from houseinfo i, housedeal d, dong c
+		where i.dongcode=#{dong} and i.apartmentName like concat('%',#{name} ,'%') and i.dongcode=c.dongcode and i.aptCode=d.aptCode
+		order by d.dealYear desc, d.dealMonth desc, d.dealDay desc
+	</select>	
+
+</mapper>

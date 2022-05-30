@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.mapper.BoardCommentMapper">
+
+	<insert id="registerBoardComment" parameterType="BoardCommentDto">
+		insert into boardcomment (memberId, boardId, commentContent)
+		values (#{memberId}, #{boardId}, #{commentContent})
+	</insert>
+	
+	<select id="listBoardComment" parameterType="integer" resultType="BoardCommentDto">
+		select *
+		from boardcomment
+		where boardid = #{boardId}
+		order by regtime
+	</select>
+
+	<select id="getTotalCount" parameterType="map" resultType="integer">
+		select count(*)
+		from boardcomment
+		where boardid = #{boardId}		
+	</select>
+	
+	<update id="updateBoardComment" parameterType="BoardCommentDto">
+		update boardcomment
+		set commentContent = #{commentContent}
+		where commentid = #{commentId}
+	</update>
+	
+	<delete id="deleteBoardComment" parameterType="integer">
+		delete from boardcomment
+		where commentid = #{commentId}
+	</delete>
+</mapper>

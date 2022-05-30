@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.happyhouse.mapper.LikeDealMapper">
+
+	<!-- 관심 매물 조회 -->
+	<select id="selectLikeDeal" parameterType="string" resultType="HouseDealDto">
+		select d.no, d.aptCode, i.apartmentName, c.dongCode, c.dongName, c.sidoName, c.gugunName, i.buildYear, i.jibun, i.lat, i.lng, d.dealAmount, d.dealYear, d.dealMonth, d.dealDay, d.area, d.floor
+		from houseinfo i, housedeal d, dong c, likedeal l
+		where l.memberId=#{memberId} and l.aptNo=d.no and d.aptCode=i.aptCode and i.dongcode=c.dongcode
+		order by regTime desc
+	</select>
+	
+	<!-- 관심 매물 등록 -->
+	<insert id="insertLikeDeal" parameterType="likeDealDto">
+		insert into likedeal(aptNo, memberId)
+		values(#{aptNo}, #{memberId})
+	</insert>
+	
+	<!-- 관심 매물 삭제 -->
+	<delete id="deleteLikeDeal" parameterType="likeDealDto">
+		delete 
+		from likedeal 
+		where aptNo=#{aptNo} and memberId=#{memberId}
+	</delete>
+	
+	<!-- 관심 매물 순위 -->
+	<select id="likeDealRanking" resultType="LikeDealRankDto">
+		select i.apartmentName aptName, d.no aptNo
+		from houseinfo i, housedeal d, (select aptNo from likedeal group by aptNo order by count(aptNo) DESC limit 10) l
+		where l.aptNo=d.no and d.aptCode=i.aptCode
+	</select>
+
+</mapper>
